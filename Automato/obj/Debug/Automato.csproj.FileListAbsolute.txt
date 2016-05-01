@@ -1,0 +1,28 @@
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\bin\Debug\Automato.exe.config
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Automato.csprojResolveAssemblyReference.cache
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Tetris.DialogGetTransitionElement.resources
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Automato.Form1.resources
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Automato.GetElementTransition.resources
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Automato.Properties.Resources.resources
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Automato.csproj.GenerateResource.Cache
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\bin\Debug\Automato.exe
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\bin\Debug\Automato.pdb
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\bin\Debug\SdlDotNet.dll
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\bin\Debug\Tao.Sdl.dll
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\bin\Debug\Tao.Sdl.xml
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Automato.exe
+C:\Users\Lucas\Documents\Visual Studio 2015\Projects\Automato\Automato\obj\Debug\Automato.pdb
+C:\Users\Lucas\Desktop\Automato\Automato\bin\Debug\Automato.exe.config
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.exe
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.pdb
+C:\Users\Lucas\Desktop\Automato\Automato\bin\Debug\Automato.exe
+C:\Users\Lucas\Desktop\Automato\Automato\bin\Debug\Automato.pdb
+C:\Users\Lucas\Desktop\Automato\Automato\bin\Debug\SdlDotNet.dll
+C:\Users\Lucas\Desktop\Automato\Automato\bin\Debug\Tao.Sdl.dll
+C:\Users\Lucas\Desktop\Automato\Automato\bin\Debug\Tao.Sdl.xml
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.csprojResolveAssemblyReference.cache
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Tetris.DialogGetTransitionElement.resources
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.Form1.resources
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.GetElementTransition.resources
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.Properties.Resources.resources
+C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.csproj.GenerateResource.Cache
