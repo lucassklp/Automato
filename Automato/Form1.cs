@@ -44,7 +44,7 @@ namespace Automato
         Triangle initialState = new Triangle(new Point(0, 0), new Point(10, 10), new Point(0, 20)); //Seta do Estado Inicial
         List<Node> listNodes = new List<Node>(); //Lista com os Nós (Ou Estados)
         List<Transition> listTransition = new List<Transition>(); //Lista com as transições
-
+        
         //Nodes temporários (usados no comando de transição)
         Node from = null, to = null, selected = null;
         
@@ -57,12 +57,8 @@ namespace Automato
         public void IniciarSdl()
         {
             Screen = Video.SetVideoMode(1024, 500, false, false, false);
+            Video.WindowCaption = "Simulador de Automatos";
             SdlDotNet.Graphics.Font font = new SdlDotNet.Graphics.Font(@"C:\Windows\Fonts\Arial.ttf", 12);
-
-            SdlDotNet.Core.Events.Quit += new EventHandler<QuitEventArgs>(delegate (object sender, QuitEventArgs args)
-            {
-                SdlDotNet.Core.Events.QuitApplication();
-            });
 
             SdlDotNet.Core.Events.Fps = 120;
 
@@ -112,11 +108,37 @@ namespace Automato
 
                     //Pegamos a posição da seta
                     Point setaPosition = Calculos.GetSetaPosition(p, centroCircunferencia);
-                    setaPosition.X -= 7;
-                    Triangle seta = new Triangle(new Point(0, 0), new Point(5, 5), new Point(0, 10));
-                    seta.Center = setaPosition;
-                    seta.Draw(Screen, Color.White);
-                   
+                    Point setaDestination = new Point(setaPosition.X - 5, setaPosition.Y - 5);
+
+                    double angulo = Calculos.GetAnguloReta(p.Point1, p.Point2);
+                    Point Seta1Destino = Calculos.GetFinalPointRotate(setaPosition, setaDestination, angulo);
+                    //Point Seta2Destino
+                    Line s1 = new Line(setaPosition, setaDestination);
+
+
+                    s1.Draw(Screen, Color.White);
+
+
+                    //Line s2 = new Line(setaPosition, new Point(setaPosition.X - 50, setaPosition.Y + 100));
+                    //s2.Draw(Screen, Color.White);
+
+
+                    //Triangle seta = new Triangle(new Point(0, 0), new Point(5, 5), new Point(0, 10));
+                    //seta.Center = setaPosition;
+                    //seta.Draw(Screen, Color.White, true, true);
+
+
+
+
+
+                    //Ellipse seta = new Ellipse(setaPosition, new Size(5, 5));
+                    //seta.Draw(Screen, Color.Azure, true, true);
+
+
+
+
+                    //setaPosition.X -= 7;
+
                 }
                 printedTransition.Clear();
 
@@ -177,10 +199,12 @@ namespace Automato
                 }
 
 
-
                 if(this.Command == 'Q')
                 {
-
+                    Transition item = listTransition.First();
+                    double angulo = Calculos.GetAnguloReta(item.From.Coordenada, item.To.Coordenada);
+                    MessageBox.Show(string.Format("O angulo formado eh:{0}", angulo));
+                    this.Command = ' ';
 
                 }
 
@@ -395,9 +419,10 @@ namespace Automato
         private void btnDefinir_Click(object sender, EventArgs e)
         {
             this.Alphabet = new List<char>();
-            foreach(var item in txtAlfabeto.Text.Split(',').ToList())
+            
+            foreach (var item in txtAlfabeto.Text.Split(',').ToList())
                 this.Alphabet.Add(char.Parse(item));
-
+            
             this.Hide();
             IniciarSdl();
         }

@@ -11,6 +11,43 @@ namespace Automato
     class Calculos
     {
 
+
+        public static Point GetFinalPointRotate(Point origin, Point destination, double Angulo)
+        {
+            int x;
+            int y;
+            //Angulo = Angulo * (Math.PI / 180);
+            x = Convert.ToInt32(Math.Cos(Angulo) * (destination.X - origin.X) - Math.Sin(Angulo % 90) * ((destination.Y - origin.Y) + origin.X));
+            y = Convert.ToInt32(Math.Sin(Angulo) * (destination.X - origin.X) + Math.Cos(Angulo % 90) * ((destination.Y - origin.Y) + origin.Y));
+
+            return new Point(x, y);
+        }
+
+        
+
+        public static double GetAnguloReta(Point pt1, Point pt2)
+        {
+            float dx = pt2.X - pt1.X;
+            float dy = pt2.Y - pt1.Y;
+
+            double deg = Math.Atan2(dy, dx) * (180 / Math.PI);
+            if (deg < 0)
+                deg += 360;
+
+            return deg;
+        }
+
+        //public static double GetAnguloReta(Line reta)
+        //{
+        //    double By = reta.Point2.Y;
+        //    double Ay = reta.Point1.Y;
+        //    double Bx = reta.Point2.X;
+        //    double Ax = reta.Point1.X;
+        //    double coef = (By - Ay) / (Bx - Ax);
+        //    return Math.Atan2(coef); //angle = atan((By - Ay) / (Bx - Ax))
+        //}
+
+
         /// <summary>
         /// Função usada para calcular o ponto médio
         /// </summary>
