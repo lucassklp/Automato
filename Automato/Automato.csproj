@@ -71,6 +71,8 @@
     <Compile Include="GetElementTransition.designer.cs">
       <DependentUpon>GetElementTransition.cs</DependentUpon>
     </Compile>
+    <Compile Include="LeitorAutomato.cs" />
+    <Compile Include="MinimizacaoAutomato.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
