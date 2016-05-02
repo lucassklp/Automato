@@ -178,6 +178,13 @@ namespace Automato
 
 
 
+                if(this.Command == 'Q')
+                {
+
+                }
+
+
+
                 SurfaceTextCoordinate = font.Render(Position, Color.White);
                 SurfaceTextStatus = font.Render(Status, Color.White);
                 SurfaceTextMenu = font.Render(this.Menu, Color.White);
@@ -218,6 +225,8 @@ namespace Automato
                 this.Command = 'K';
             else if (e.Key == (Key.I))
                 this.Command = 'I';
+            else if (e.Key == (Key.Q))
+                this.Command = 'Q';
         }
 
 
@@ -389,9 +398,6 @@ namespace Automato
                 this.Alphabet.Add(char.Parse(item));
 
             this.Hide();
-            this.txtAlfabeto.Visible = false;
-            this.btnDefinir.Visible = false;
-
             IniciarSdl();
         }
 
