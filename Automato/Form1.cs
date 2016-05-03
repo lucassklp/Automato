@@ -26,17 +26,24 @@ namespace Automato
         private Surface SurfaceTextCoordinate;
         private Surface SurfaceTextStatus;
         private Surface SurfaceTextMenu;
+
+        //Esquema de cores
+        Color backgroundColor = Color.White;
+        Color foregroundColor = Color.Black;
+
+        //Exemplo de uma instância de cor RGBA
+        Color customColor = Color.FromArgb(8, 255, 0, 0);
         
         //Variáveis de estado do programa
         private static int x = 0; //Coordenada X
         private static int y = 0; //Coordenada Y
         private char PreviousCommand = ' '; //Comando Anterior
-        private char Command = ' '; //Proximo Comando
+        private static char Command = ' '; //Proximo Comando
 
         //Legendas
         private string Status = "Ready"; //Texto do status
         private string  Menu = "M: Mover | E: Inserir novo estado | Delete: Deletar Elementos | T: Adicionar Transição | I: Definir estado inicial"; //Texto do Menu
-        //private string Legenda = "Amarelo: Inicial e Aceitação | Laranja: Inicial e Não Aceitação | Verde: Aceitação | Vermelho: Não Aceitação";
+        private string Debug = "Debuging...";
 
 
         //Representação global dos automatos
@@ -47,7 +54,10 @@ namespace Automato
         
         //Nodes temporários (usados no comando de transição)
         Node from = null, to = null, selected = null;
-        
+        private Surface SurfaceTextDebug;
+        private Line linhaTransicao;
+        private Triangle setaTransicao;
+
         public Form1()
         {
             InitializeComponent();
@@ -65,13 +75,19 @@ namespace Automato
             SdlDotNet.Core.Events.Tick += new EventHandler<TickEventArgs>(delegate (object sender, TickEventArgs args)
             {
 
-                string Position = string.Format("Posição X: {0} Y: {1}", x, y);
-                Status = GetStatus(this.Command);
 
-                Screen.Fill(Color.Black);
+                SdlDotNet.Core.Events.MouseButtonDown += new EventHandler<MouseButtonEventArgs>(MouseButtonDown);
+                SdlDotNet.Core.Events.MouseMotion += new EventHandler<MouseMotionEventArgs>(MouseMotionEvent);
+                SdlDotNet.Core.Events.KeyboardUp += new EventHandler<KeyboardEventArgs>(KeyboardPress);
+                SdlDotNet.Core.Events.MouseButtonUp += new EventHandler<MouseButtonEventArgs>(MouseButtonUp);
+
+
+                string Position = string.Format("Posição X: {0} Y: {1}", x, y);
+                Status = GetStatus(Command);
+
+                Screen.Fill(backgroundColor);
 
                 //Exibir as linhas de transição
-                List<Transition> printedTransition = new List<Transition>();
                 foreach (var item in this.listTransition)
                 {
                     //Renderização da linha
@@ -89,17 +105,12 @@ namespace Automato
                     curvaBezier.Center = new Point(pontoMedio.X, pontoMedio.Y);
 
 
-                    if (printedTransition.Find(pt => pt.From == item.From || pt.To == item.To || pt.From == item.To || pt.To == item.From) == null)
-                        p.Draw(Screen, Color.White, true);
-                    else
-                        curvaBezier.Draw(Screen, Color.White, true);
+                    p.Draw(Screen, foregroundColor, true);
 
-
-                    printedTransition.Add(item);
                     
                     //Imprime o elemento de transição
                     string element = item.Element.ToString();
-                    Surface transitionElementText = font.Render(element, Color.White);
+                    Surface transitionElementText = font.Render(element, foregroundColor);
                     Screen.Blit(transitionElementText, pontoMedio);
 
                     //Desenha """"""""a seta"""""""""""
@@ -108,40 +119,21 @@ namespace Automato
 
                     //Pegamos a posição da seta
                     Point setaPosition = Calculos.GetSetaPosition(p, centroCircunferencia);
-                    Point setaDestination = new Point(setaPosition.X - 5, setaPosition.Y - 5);
+                    int angulo = Calculos.GetAnguloReta(p.Point1, p.Point2);
 
-                    double angulo = Calculos.GetAnguloReta(p.Point1, p.Point2);
-                    Point Seta1Destino = Calculos.GetFinalPointRotate(setaPosition, setaDestination, angulo);
-                    //Point Seta2Destino
-                    Line s1 = new Line(setaPosition, setaDestination);
+                    Triangle seta = Calculos.GetArrow(setaPosition, angulo);
+                    seta.Draw(Screen, foregroundColor, true, true);
 
-
-                    s1.Draw(Screen, Color.White);
-
-
-                    //Line s2 = new Line(setaPosition, new Point(setaPosition.X - 50, setaPosition.Y + 100));
-                    //s2.Draw(Screen, Color.White);
-
-
-                    //Triangle seta = new Triangle(new Point(0, 0), new Point(5, 5), new Point(0, 10));
-                    //seta.Center = setaPosition;
-                    //seta.Draw(Screen, Color.White, true, true);
-
-
-
-
-
-                    //Ellipse seta = new Ellipse(setaPosition, new Size(5, 5));
-                    //seta.Draw(Screen, Color.Azure, true, true);
-
-
-
-
-                    //setaPosition.X -= 7;
 
                 }
-                printedTransition.Clear();
 
+
+
+                if (this.linhaTransicao != null)
+                {
+                    this.linhaTransicao.Draw(Screen, Color.Red);
+                    this.setaTransicao.Draw(Screen, Color.Red, true, true);
+                }
 
                 //Exibir automatos
                 foreach (var item in this.listNodes)
@@ -153,13 +145,15 @@ namespace Automato
                         //Desenha o node
                         node.Draw(Screen, Color.Green, true, true);
 
+                        //Desenha o circulo menor interno, 
+                        Ellipse circuloMenor = new Ellipse(item.Coordenada, new Size(15, 15));
+                        circuloMenor.Draw(Screen, Color.Black);
+
                         //Desenha a seta indicando o estado inicia
                         initialState.Center = new Point(item.Coordenada.X - 20, item.Coordenada.Y);
                         initialState.Draw(Screen, Color.Red, true, true);
 
-                        //Desenha o circulo menor interno, 
-                        Ellipse circuloMenor = new Ellipse(item.Coordenada, new Size(15, 15));
-                        circuloMenor.Draw(Screen, Color.Black);
+
 
                         Surface nodeName = font.Render(item.Nome, Color.White);
                         Screen.Blit(nodeName, new Point(item.Coordenada.X - 7, item.Coordenada.Y - 7));
@@ -199,32 +193,18 @@ namespace Automato
                 }
 
 
-                if(this.Command == 'Q')
-                {
-                    Transition item = listTransition.First();
-                    double angulo = Calculos.GetAnguloReta(item.From.Coordenada, item.To.Coordenada);
-                    MessageBox.Show(string.Format("O angulo formado eh:{0}", angulo));
-                    this.Command = ' ';
 
-                }
-
-
-
-                SurfaceTextCoordinate = font.Render(Position, Color.White);
-                SurfaceTextStatus = font.Render(Status, Color.White);
-                SurfaceTextMenu = font.Render(this.Menu, Color.White);
-                //SurfaceTextLegenda = font.Render(this.Legenda, Color.White);
+                SurfaceTextCoordinate = font.Render(Position, foregroundColor);
+                SurfaceTextStatus = font.Render(Status, foregroundColor);
+                SurfaceTextMenu = font.Render(this.Menu, foregroundColor);
+                SurfaceTextDebug = font.Render(this.Debug, foregroundColor);
 
                 Screen.Blit(SurfaceTextCoordinate, new Point(890, 0));
                 Screen.Blit(SurfaceTextMenu, new Point(0, 0));
                 Screen.Blit(SurfaceTextStatus, new Point(0, 450));
-                //Screen.Blit(SurfaceTextLegenda, new Point(340, 450));
+                Screen.Blit(SurfaceTextDebug, new Point(500, 450));
 
-                SdlDotNet.Core.Events.MouseButtonDown += new EventHandler<MouseButtonEventArgs>(ExecuteCommand);
-                SdlDotNet.Core.Events.MouseMotion += new EventHandler<MouseMotionEventArgs>(MouseMotionEvent);
-                SdlDotNet.Core.Events.KeyboardUp += new EventHandler<KeyboardEventArgs>(KeyboardPress);
-
-
+                Debug = "Debugging";
 
                 Screen.Update();
             });
@@ -232,41 +212,66 @@ namespace Automato
             SdlDotNet.Core.Events.Run();
         }
 
+        private void MouseButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Command == 'M')
+                this.selected = null;
+            else if(Command == 'T')
+            {
+                Node selectedNode = GetClickedNode();
+                if(selectedNode != null)
+                {
+                    char elem;
 
+                    GetElementTransition getElementTransition = new GetElementTransition(this.Alphabet);
+                    getElementTransition.ShowDialog();
+                    elem = getElementTransition.Element;
+                    getElementTransition.Close();
+
+                    this.listTransition.Add(new Transition(from, selectedNode, elem));
+                }
+
+                this.linhaTransicao = new Line();
+                this.setaTransicao = new Triangle();
+                this.from = null;
+                this.to = null;
+                Command = ' ';
+            }
+
+        }
 
         private void KeyboardPress(object sender, KeyboardEventArgs e)
         {
             if (e.Key == (Key.Delete))
-                this.Command = 'D';
+                Command = 'D';
             else if (e.Key == (Key.E))
-                this.Command = 'E';
+                Command = 'E';
             else if (e.Key == (Key.T))
-                this.Command = 'T';
+                Command = 'T';
             else if (e.Key == (Key.S))
-                this.Command = 'S';
+                Command = 'S';
             else if (e.Key == (Key.M))
-                this.Command = 'M';
+                Command = 'M';
             else if (e.Key == (Key.K))
-                this.Command = 'K';
+                Command = 'K';
             else if (e.Key == (Key.I))
-                this.Command = 'I';
+                Command = 'I';
             else if (e.Key == (Key.Q))
-                this.Command = 'Q';
+                Command = 'Q';
         }
 
-
-        private void ExecuteCommand(object sender, MouseButtonEventArgs args)
+        private void MouseButtonDown(object sender, MouseButtonEventArgs args)
         {
             if (args.Button == MouseButton.PrimaryButton)
             {
-                if (this.Command == 'E')
+                if (Command == 'E')
                 {
                     string Nome = GenerateNodeName();
                     this.listNodes.Add(new Node(Nome, new Point(x, y), Estado.NaoAceitacao));
                     this.PreviousCommand = 'E';
-                    this.Command = ' ';
+                    Command = ' ';
                 }
-                else if (this.Command == 'D')
+                else if (Command == 'D')
                 {
                     Node toDelete = GetClickedNode();
                     if (toDelete != null)
@@ -275,46 +280,19 @@ namespace Automato
                         listNodes.Remove(toDelete);
                     }
                     this.PreviousCommand = 'D';
-                    this.Command = ' ';
+                    Command = ' ';
                 }
-                else if (this.Command == 'T')
+                else if (Command == 'T' && this.from == null)
                 {
-
-                    this.Command = ' ';
                     this.from = GetClickedNode();
-                    this.PreviousCommand = 'T';
-                    
                 }
-                else if (this.Command == 'S' && this.PreviousCommand == 'T')
-                {
-                    char elem;
-
-
-
-                    GetElementTransition getElementTransition = new GetElementTransition(this.Alphabet);
-                    getElementTransition.ShowDialog();
-                    elem = getElementTransition.Element;
-                    getElementTransition.Close();
-
-
-
-
-                    this.to = GetClickedNode();
-
-                    if (this.from != null && this.to != null) {
-                        this.listTransition.Add(new Transition(from, to, elem));
-                    }
-                    
-                    this.PreviousCommand = 'S';
-                    this.Command = ' ';
-                }
-                else if (this.Command == 'S' && this.PreviousCommand != 'T')
+                else if (Command == 'S' && this.PreviousCommand != 'T')
                 {
                     this.PreviousCommand = 'S';
-                    this.Command = ' ';
+                    Command = ' ';
                     return;
                 }
-                else if (this.Command == 'M')
+                else if (Command == 'M')
                 {
                     this.selected = GetClickedNode();
                     if (this.selected != null)
@@ -323,7 +301,7 @@ namespace Automato
                         return;
 
                 }
-                else if(this.Command == 'I')
+                else if(Command == 'I')
                 {
                     Node setInitial = GetClickedNode();
                     Node inicialState = this.listNodes.Find(p => p.Estado == Estado.InicialAceitacao || p.Estado == Estado.InicialNaoAceitacao);
@@ -344,7 +322,7 @@ namespace Automato
 
                     }
 
-                    this.Command = ' ';
+                    Command = ' ';
                     this.PreviousCommand = 'I';
                 }
 
@@ -376,10 +354,7 @@ namespace Automato
                 this.selected.Coordenada.X = x;
                 this.selected.Coordenada.Y = y;
             }
-            if (this.Command == 'K')
-                this.selected = null;
         }
-
 
         private Node GetClickedNode()
         {
@@ -400,7 +375,6 @@ namespace Automato
         private string GenerateNodeName()
         {
             int count = 0;
-
             for (count = 0; count < listNodes.Count; count++)
             {
                 if (this.listNodes.Find(p => p.Nome == string.Format("q{0}", count)) == null)
@@ -410,10 +384,20 @@ namespace Automato
             return string.Format("q{0}", count);
         }
 
-        private static void MouseMotionEvent(object sender, MouseMotionEventArgs args)
+        private void MouseMotionEvent(object sender, MouseMotionEventArgs args)
         {
             x = args.Position.X;
             y = args.Position.Y;
+
+            if(from != null && Command == 'T')
+            {
+                this.linhaTransicao = new Line(this.from.Coordenada, new Point(x, y));
+                int angulo = Calculos.GetAnguloReta(this.linhaTransicao.Point1, this.linhaTransicao.Point2);
+                this.setaTransicao = Calculos.GetArrow(new Point(x, y), angulo);
+
+                Debug = "Line";
+            }
+
         }
 
         private void btnDefinir_Click(object sender, EventArgs e)

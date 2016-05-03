@@ -11,41 +11,70 @@ namespace Automato
     class Calculos
     {
 
-
-        public static Point GetFinalPointRotate(Point origin, Point destination, double Angulo)
+        /// <summary>
+        /// Função usada para renderizar a ponta da seta
+        /// </summary>
+        /// <param name="setaPosition">A posição em que a seta apontará</param>
+        /// <param name="angulo">O ângulo de inclinação da seta</param>
+        /// <returns>Uma seta na determinada posição, na determinada inclinação</returns>
+        public static Triangle GetArrow(Point setaPosition, int angulo)
         {
-            int x;
-            int y;
-            //Angulo = Angulo * (Math.PI / 180);
-            x = Convert.ToInt32(Math.Cos(Angulo) * (destination.X - origin.X) - Math.Sin(Angulo % 90) * ((destination.Y - origin.Y) + origin.X));
-            y = Convert.ToInt32(Math.Sin(Angulo) * (destination.X - origin.X) + Math.Cos(Angulo % 90) * ((destination.Y - origin.Y) + origin.Y));
+            Point pontoCentro = setaPosition;
+            Point ponto1 = new Point(setaPosition.X - 5, setaPosition.Y - 5);
+            Point ponto2 = new Point(setaPosition.X - 5, setaPosition.Y + 5);
 
-            return new Point(x, y);
+            ponto1 = RotatePoint(ponto1, setaPosition, angulo);
+            ponto2 = RotatePoint(ponto2, setaPosition, angulo);
+
+            Triangle seta = new Triangle(pontoCentro, ponto1, ponto2);
+            return seta;
         }
 
-        
 
-        public static double GetAnguloReta(Point pt1, Point pt2)
+        /// <summary>
+        /// Função usada para rotacionar um ponto em relação a um dado ponto central
+        /// </summary>
+        /// <param name="pointToRotate">O ponto que irá se movimentar (o ponto que será rotacionado)</param>
+        /// <param name="centerPoint">O ponto central</param>
+        /// <param name="angleInDegrees">O ângulo de rotação (em graus)</param>
+        /// <returns>A posição do ponto após a rotação</returns>
+        private static Point RotatePoint(Point pointToRotate, Point centerPoint, double angleInDegrees)
+        {
+            double angleInRadians = angleInDegrees * (Math.PI / 180);
+            double cosTheta = Math.Cos(angleInRadians);
+            double sinTheta = Math.Sin(angleInRadians);
+            return new Point
+            {
+                X =
+                    (int)
+                    (cosTheta * (pointToRotate.X - centerPoint.X) -
+                    sinTheta * (pointToRotate.Y - centerPoint.Y) + centerPoint.X),
+                Y =
+                    (int)
+                    (sinTheta * (pointToRotate.X - centerPoint.X) +
+                    cosTheta * (pointToRotate.Y - centerPoint.Y) + centerPoint.Y)
+            };
+        }
+
+
+        /// <summary>
+        /// Função usada para descobrir o ângulo da reta
+        /// </summary>
+        /// <param name="pt1">Origem da Reta</param>
+        /// <param name="pt2">Destino da Reta</param>
+        /// <returns>O ângulo (em graus) formado por essa reta</returns>
+        public static int GetAnguloReta(Point pt1, Point pt2)
         {
             float dx = pt2.X - pt1.X;
             float dy = pt2.Y - pt1.Y;
 
-            double deg = Math.Atan2(dy, dx) * (180 / Math.PI);
+            int deg = Convert.ToInt32(Math.Atan2(dy, dx) * (180 / Math.PI));
             if (deg < 0)
                 deg += 360;
 
             return deg;
         }
 
-        //public static double GetAnguloReta(Line reta)
-        //{
-        //    double By = reta.Point2.Y;
-        //    double Ay = reta.Point1.Y;
-        //    double Bx = reta.Point2.X;
-        //    double Ax = reta.Point1.X;
-        //    double coef = (By - Ay) / (Bx - Ax);
-        //    return Math.Atan2(coef); //angle = atan((By - Ay) / (Bx - Ax))
-        //}
 
 
         /// <summary>
@@ -74,7 +103,7 @@ namespace Automato
 
 
         /// <summary>
-        /// Função usada para informar se um ponto pertence a uma reta
+        /// Função usada para informar se um ponto pertence a uma reta => (ax + by + c) = 0
         /// </summary>
         /// <param name="a">Coeficiente 'a' da equacao geral da reta</param>
         /// <param name="b">Coeficiente 'b' da equacao geral da reta</param>
@@ -115,8 +144,6 @@ namespace Automato
 
             for (int angulo = 0; angulo < 360; angulo++)
                 listPontos.Add(PontoNoCirculo(Constantes.Diametro, angulo, centroCircunferenciaDestino));
-
-
 
             //verificando quais da lista pertentem a reta
             foreach (var itemPonto in listPontos)
