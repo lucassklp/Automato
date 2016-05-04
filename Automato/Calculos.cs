@@ -19,6 +19,9 @@ namespace Automato
         /// <returns>Uma seta na determinada posição, na determinada inclinação</returns>
         public static Triangle GetArrow(Point setaPosition, int angulo)
         {
+            if (angulo % 46 == 45)
+                angulo++;
+
             Point pontoCentro = setaPosition;
             Point ponto1 = new Point(setaPosition.X - 5, setaPosition.Y - 5);
             Point ponto2 = new Point(setaPosition.X - 5, setaPosition.Y + 5);

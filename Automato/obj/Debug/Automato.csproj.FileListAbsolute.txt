@@ -26,3 +26,14 @@ C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.Form1.resources
 C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.GetElementTransition.resources
 C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.Properties.Resources.resources
 C:\Users\Lucas\Desktop\Automato\Automato\obj\Debug\Automato.csproj.GenerateResource.Cache
+D:\Lucas\Projetos\GitHub\Automato\Automato\bin\Debug\Automato.exe.config
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.exe
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.pdb
+D:\Lucas\Projetos\GitHub\Automato\Automato\bin\Debug\Automato.exe
+D:\Lucas\Projetos\GitHub\Automato\Automato\bin\Debug\Automato.pdb
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.csprojResolveAssemblyReference.cache
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Tetris.DialogGetTransitionElement.resources
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.Form1.resources
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.GetElementTransition.resources
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.Properties.Resources.resources
+D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.csproj.GenerateResource.Cache

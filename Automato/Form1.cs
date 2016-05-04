@@ -63,24 +63,20 @@ namespace Automato
             InitializeComponent();
         }
 
-
         public void IniciarSdl()
         {
             Screen = Video.SetVideoMode(1024, 500, false, false, false);
             Video.WindowCaption = "Simulador de Automatos";
             SdlDotNet.Graphics.Font font = new SdlDotNet.Graphics.Font(@"C:\Windows\Fonts\Arial.ttf", 12);
 
-            SdlDotNet.Core.Events.Fps = 120;
+            SdlDotNet.Core.Events.Fps = 60;
 
             SdlDotNet.Core.Events.Tick += new EventHandler<TickEventArgs>(delegate (object sender, TickEventArgs args)
             {
-
-
                 SdlDotNet.Core.Events.MouseButtonDown += new EventHandler<MouseButtonEventArgs>(MouseButtonDown);
                 SdlDotNet.Core.Events.MouseMotion += new EventHandler<MouseMotionEventArgs>(MouseMotionEvent);
                 SdlDotNet.Core.Events.KeyboardUp += new EventHandler<KeyboardEventArgs>(KeyboardPress);
                 SdlDotNet.Core.Events.MouseButtonUp += new EventHandler<MouseButtonEventArgs>(MouseButtonUp);
-
 
                 string Position = string.Format("Posição X: {0} Y: {1}", x, y);
                 Status = GetStatus(Command);
@@ -88,43 +84,60 @@ namespace Automato
                 Screen.Fill(backgroundColor);
 
                 //Exibir as linhas de transição
+                List<Transition> transicoesFeitas = new List<Transition>();
                 foreach (var item in this.listTransition)
                 {
-                    //Renderização da linha
-                    Line p = new Line(item.From.Coordenada, item.To.Coordenada);
-
-                    //Calcular a posição do Element da Transition
-                    Point pontoMedio = Calculos.GetPontoMedio(p.Point1, p.Point2);
-
-                    ArrayList pontosBezier = new ArrayList();
-                    pontosBezier.Add(item.To.Coordenada);
-                    pontosBezier.Add(new Point(pontoMedio.X, pontoMedio.Y + 100));
-                    pontosBezier.Add(item.From.Coordenada);
-
-                    Bezier curvaBezier = new Bezier(pontosBezier, 3);
-                    curvaBezier.Center = new Point(pontoMedio.X, pontoMedio.Y);
-
-
-                    p.Draw(Screen, foregroundColor, true);
-
                     
-                    //Imprime o elemento de transição
-                    string element = item.Element.ToString();
-                    Surface transitionElementText = font.Render(element, foregroundColor);
-                    Screen.Blit(transitionElementText, pontoMedio);
-
-                    //Desenha """"""""a seta"""""""""""
-                    //Inicialmente, pegamos a posição do centro do circulo destino
+                    
+                    Line p = new Line(item.From.Coordenada, item.To.Coordenada);
+                    Point pontoMedio = Calculos.GetPontoMedio(p.Point1, p.Point2);
                     Point centroCircunferencia = item.To.Coordenada;
 
-                    //Pegamos a posição da seta
-                    Point setaPosition = Calculos.GetSetaPosition(p, centroCircunferencia);
-                    int angulo = Calculos.GetAnguloReta(p.Point1, p.Point2);
+                    if (transicoesFeitas.Find(tr => tr.From == item.To && tr.To == item.From) != null) {
+                        ArrayList pontosBezier = new ArrayList();
+                        pontosBezier.Add(item.To.Coordenada);
+                        pontosBezier.Add(new Point(pontoMedio.X, pontoMedio.Y + 100));
+                        pontosBezier.Add(item.From.Coordenada);
 
-                    Triangle seta = Calculos.GetArrow(setaPosition, angulo);
-                    seta.Draw(Screen, foregroundColor, true, true);
+                        Line linha1 = new Line(item.To.Coordenada, new Point(pontoMedio.X, pontoMedio.Y + 100));
 
+                        Bezier curvaBezier = new Bezier(pontosBezier, 3);
+                        curvaBezier.Center = new Point(pontoMedio.X, pontoMedio.Y);
+                        curvaBezier.Draw(Screen, foregroundColor, true);
 
+                        Point setaPosition = Calculos.GetSetaPosition(linha1, centroCircunferencia);
+
+                        int angulo = Calculos.GetAnguloReta(linha1.Point1, linha1.Point2) + 180;
+
+                        Triangle seta = Calculos.GetArrow(setaPosition, angulo);
+                        seta.Draw(Screen, foregroundColor, true, true);
+
+                        string element = item.Element.ToString();
+                        Surface transitionElementText = font.Render(element, foregroundColor);
+                        Screen.Blit(transitionElementText, new Point(pontoMedio.X, pontoMedio.Y + 50));
+
+                    }
+                    else
+                    {
+                        //Imprime a linha
+                        p.Draw(Screen, foregroundColor, true);
+
+                        //Imprime o elemento de transição
+                        string element = item.Element.ToString();
+                        Surface transitionElementText = font.Render(element, foregroundColor);
+                        Screen.Blit(transitionElementText, pontoMedio);
+
+                        //Pegamos a posição da seta
+                        Point setaPosition = Calculos.GetSetaPosition(p, centroCircunferencia);
+                        int angulo = Calculos.GetAnguloReta(p.Point1, p.Point2);
+
+                        Triangle seta = Calculos.GetArrow(setaPosition, angulo);
+                        seta.Draw(Screen, foregroundColor, true, true);
+
+                        
+                    }
+
+                    transicoesFeitas.Add(item);
                 }
 
 
@@ -151,7 +164,7 @@ namespace Automato
 
                         //Desenha a seta indicando o estado inicia
                         initialState.Center = new Point(item.Coordenada.X - 20, item.Coordenada.Y);
-                        initialState.Draw(Screen, Color.Red, true, true);
+                        initialState.Draw(Screen, Color.Red, true, false);
 
 
 
