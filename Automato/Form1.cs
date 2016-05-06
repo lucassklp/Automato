@@ -207,6 +207,16 @@ namespace Automato
 
 
 
+
+                if (Command == 'Q')
+                {
+                    MinimizacaoAutomato min = new MinimizacaoAutomato(this.listNodes, this.listTransition, this.Alphabet);
+                    min.GetEstadosEquivalentes();
+                    
+                    Command = ' ';
+                }
+
+
                 SurfaceTextCoordinate = font.Render(Position, foregroundColor);
                 SurfaceTextStatus = font.Render(Status, foregroundColor);
                 SurfaceTextMenu = font.Render(this.Menu, foregroundColor);

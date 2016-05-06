@@ -115,6 +115,8 @@ namespace Automato
         /// <returns>Retorna se pertence ou não</returns>
         private static bool VerificarSePontoPertenceAReta(double a, double b, double c, Point ponto)
         {
+            if (a == 0 && b == 0)
+                return false;
             int result = Convert.ToInt32(Math.Abs(a * ponto.X + b * ponto.Y + c) / (Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2))));
             return (result == 0);
         }

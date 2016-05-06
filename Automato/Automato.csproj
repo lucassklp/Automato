@@ -58,6 +58,7 @@
     <Compile Include="DialogGetTransitionElement.designer.cs">
       <DependentUpon>DialogGetTransitionElement.cs</DependentUpon>
     </Compile>
+    <Compile Include="DuplaEstado.cs" />
     <Compile Include="EnumEstados.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
