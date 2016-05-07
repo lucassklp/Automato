@@ -34,13 +34,6 @@ namespace Automato
                                         (p.Estado1.Estado == Estado.InicialNaoAceitacao && p.Estado2.Estado == Estado.Aceitacao));
 
 
-
-
-
-
-
-
-
             return duplaEstados;
         }
  

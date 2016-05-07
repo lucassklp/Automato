@@ -12,6 +12,17 @@ namespace Automato
     {
 
         /// <summary>
+        /// Verifica se um ponto pertence ao circulo/circunferência
+        /// </summary>
+        /// <param name="ponto">O ponto que deseja verificar</param>
+        /// <param name="centroCircunferência">O centro da circunferencia</param>
+        /// <returns>Uma boolean representando se pertence ou não.</returns>
+        public static bool PontoPertenceACircunferencia(Point ponto, Point centroCircunferência)
+        {
+            return (Math.Sqrt(Math.Pow((ponto.X - centroCircunferência.X), 2) + Math.Pow(ponto.Y - centroCircunferência.Y, 2)) <= 20);
+        }
+
+        /// <summary>
         /// Função usada para renderizar a ponta da seta
         /// </summary>
         /// <param name="setaPosition">A posição em que a seta apontará</param>
@@ -120,6 +131,24 @@ namespace Automato
             int result = Convert.ToInt32(Math.Abs(a * ponto.X + b * ponto.Y + c) / (Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2))));
             return (result == 0);
         }
+        public static bool VerificarSePontoPertenceAReta(Line linha, Point ponto)
+        {
+            double a, b, c;
+            double y1 = linha.Point1.Y;
+            double y2 = linha.Point2.Y;
+            double x1 = linha.Point1.X;
+            double x2 = linha.Point2.X;
+
+            //Equação geral da reta =>  ax + by + c = 0
+            a = y1 - y2;
+            b = x2 - x1;
+            c = (x1 - x2) * y1 + (y2 - y1) * x1;
+
+            return VerificarSePontoPertenceAReta(a, b, c, ponto);
+        }
+
+
+
 
 
         /// <summary>

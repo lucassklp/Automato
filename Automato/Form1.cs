@@ -93,7 +93,44 @@ namespace Automato
                     Point pontoMedio = Calculos.GetPontoMedio(p.Point1, p.Point2);
                     Point centroCircunferencia = item.To.Coordenada;
 
-                    if (transicoesFeitas.Find(tr => tr.From == item.To && tr.To == item.From) != null) {
+
+                    if (item.To == item.From)
+                    {
+                        Point dest = new Point(item.From.Coordenada.X + 25, item.From.Coordenada.Y + 22);
+                        Point dest1 = new Point(item.From.Coordenada.X + 20, item.From.Coordenada.Y );
+                        Point bottomReference = new Point(item.From.Coordenada.X, item.From.Coordenada.Y + 85);
+                        Point dest2 = new Point(item.From.Coordenada.X - 20, item.From.Coordenada.Y);
+
+                        Line img = new Line(item.From.Coordenada, dest);
+
+                        Line img1 = new Line(item.From.Coordenada, dest1);
+                        img1.Draw(Screen, Color.Red);
+
+                        Line img2 = new Line(item.From.Coordenada, dest2);
+                        img2.Draw(Screen, Color.Red);
+
+
+                        ArrayList pontosBezier = new ArrayList();
+                        pontosBezier.Add(dest1);
+                        pontosBezier.Add(bottomReference);
+                        pontosBezier.Add(dest2);
+
+                        Triangle seta = Calculos.GetArrow(Calculos.GetSetaPosition(img, item.From.Coordenada), 260);
+                        seta.Draw(Screen, Color.Red, true, true);
+
+
+                        Bezier cBerzier = new Bezier(pontosBezier, 3);
+                        cBerzier.Center = item.From.Coordenada;
+                        cBerzier.Draw(Screen, Color.Red);
+
+
+                        string element = item.Element.ToString();
+                        Surface transitionElementText = font.Render(element, foregroundColor);
+                        Screen.Blit(transitionElementText, new Point(pontoMedio.X - 5, pontoMedio.Y + 40));
+
+
+                    }
+                    else if (transicoesFeitas.Find(tr => tr.From == item.To && tr.To == item.From) != null) {
                         ArrayList pontosBezier = new ArrayList();
                         pontosBezier.Add(item.To.Coordenada);
                         pontosBezier.Add(new Point(pontoMedio.X, pontoMedio.Y + 100));
@@ -151,7 +188,11 @@ namespace Automato
                 //Exibir automatos
                 foreach (var item in this.listNodes)
                 {
-                    Ellipse node = new Ellipse(item.Coordenada, new Size(20, 20));
+
+                    //Os estados são circulos, não elipses, logo a definição abaixo (antiga) está errada. Para padronizar, então farei:
+                    //Ellipse node = new Ellipse(item.Coordenada, new Size(20, 20));
+
+                    Circle node = new Circle(item.Coordenada, 20); //Centro do circulo é a coordenada dele, e o raio é 20
 
                     if (item.Estado == Estado.InicialAceitacao)
                     {
@@ -164,7 +205,7 @@ namespace Automato
 
                         //Desenha a seta indicando o estado inicia
                         initialState.Center = new Point(item.Coordenada.X - 20, item.Coordenada.Y);
-                        initialState.Draw(Screen, Color.Red, true, false);
+                        initialState.Draw(Screen, Color.Red, true, true);
 
 
 
@@ -248,10 +289,12 @@ namespace Automato
 
                     GetElementTransition getElementTransition = new GetElementTransition(this.Alphabet);
                     getElementTransition.ShowDialog();
-                    elem = getElementTransition.Element;
+                    if (!getElementTransition.isCanceled)
+                    {
+                        elem = getElementTransition.Element;
+                        this.listTransition.Add(new Transition(from, selectedNode, elem));
+                    }
                     getElementTransition.Close();
-
-                    this.listTransition.Add(new Transition(from, selectedNode, elem));
                 }
 
                 this.linhaTransicao = new Line();
@@ -297,11 +340,18 @@ namespace Automato
                 else if (Command == 'D')
                 {
                     Node toDelete = GetClickedNode();
+                    Transition TransicionToDelete = GetClickedTransition();
+
+
                     if (toDelete != null)
                     {
                         this.listTransition.RemoveAll(p => p.From.Nome == toDelete.Nome || p.To.Nome == toDelete.Nome);
                         listNodes.Remove(toDelete);
                     }
+                    if (TransicionToDelete != null)
+                        this.listTransition.Remove(TransicionToDelete);
+                    
+
                     this.PreviousCommand = 'D';
                     Command = ' ';
                 }
@@ -346,11 +396,7 @@ namespace Automato
                     }
 
                     Command = ' ';
-                    this.PreviousCommand = 'I';
                 }
-
-
-
             }
             else if(args.Button == MouseButton.SecondaryButton)
             {
@@ -366,9 +412,10 @@ namespace Automato
                     else if (toChange.Estado == Estado.Aceitacao)
                         toChange.Estado = Estado.NaoAceitacao;
                 }
-                
             }
         }
+
+
 
         private void ArrastarNode(object sender, MouseMotionEventArgs e)
         {
@@ -386,11 +433,35 @@ namespace Automato
 	        {
                 //Tomemos o centro da circunferência:
                 Point centroCircunferência = item.Coordenada;
+                Point pontoAtual = new Point(x, y);
 
-                //Usando a equação geral da circunferência temos:            
-                if (Math.Sqrt(Math.Pow((x - centroCircunferência.X), 2) + Math.Pow(y - centroCircunferência.Y, 2)) <= 100)
+                if (Calculos.PontoPertenceACircunferencia(pontoAtual, centroCircunferência))
                     return item;
 	        }
+
+            return null;
+        }
+
+        private Transition GetClickedTransition()
+        {
+            foreach (var item in this.listTransition)
+            {
+                Point pontoAtual = new Point(x, y);
+                Line linha = new Line(item.From.Coordenada, item.To.Coordenada);
+
+                if (Calculos.VerificarSePontoPertenceAReta(linha, pontoAtual))
+                {
+                    if (linha.Point2.X < linha.Point1.X && linha.Point2.Y < linha.Point1.Y)
+                    {
+                        if ((pontoAtual.X > linha.Point2.X && pontoAtual.Y > linha.Point2.Y) && (pontoAtual.X < linha.Point1.X && pontoAtual.Y < linha.Point1.Y))
+                            return item;
+                    }
+                    else
+                        if ((pontoAtual.X < linha.Point2.X && pontoAtual.Y < linha.Point2.Y) && (pontoAtual.X > linha.Point1.X && pontoAtual.Y > linha.Point1.Y))
+                            return item;
+                        
+                }
+            }
 
             return null;
         }
