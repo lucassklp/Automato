@@ -251,6 +251,15 @@ namespace Automato
 
                 if (Command == 'Q')
                 {
+
+                    VerificadorAutomato verificador = new VerificadorAutomato(this.listNodes, this.listTransition, this.Alphabet);
+                    bool isValid = verificador.Validar();
+
+                    if (isValid)
+                        MessageBox.Show("Valido");
+                    else
+                        MessageBox.Show("Invalido");
+
                     MinimizacaoAutomato min = new MinimizacaoAutomato(this.listNodes, this.listTransition, this.Alphabet);
                     min.GetEstadosEquivalentes();
                     
@@ -411,6 +420,7 @@ namespace Automato
                         toChange.Estado = Estado.Aceitacao;
                     else if (toChange.Estado == Estado.Aceitacao)
                         toChange.Estado = Estado.NaoAceitacao;
+
                 }
             }
         }

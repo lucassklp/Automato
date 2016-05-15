@@ -32,10 +32,30 @@ namespace Automato
                                         (p.Estado1.Estado == Estado.NaoAceitacao && p.Estado2.Estado == Estado.Aceitacao) ||
                                         (p.Estado1.Estado == Estado.InicialAceitacao && p.Estado2.Estado == Estado.NaoAceitacao) ||
                                         (p.Estado1.Estado == Estado.InicialNaoAceitacao && p.Estado2.Estado == Estado.Aceitacao));
+            ,
+
+            LeitorAutomato leitorAutomato = new LeitorAutomato(this.listaEstados, this.listaTransicao, this.Alfabeto);
+            foreach (var dupla in duplaEstados)
+            {
+                bool isValid = true;
+
+                foreach (var item in this.Alfabeto)
+                    if (leitorAutomato.GetEstado(item.ToString(), dupla.Estado1) != leitorAutomato.GetEstado(item.ToString(), dupla.Estado2))
+                        isValid = false;
+                
+
+                if (!isValid)
+                    duplaEstados.Remove(dupla);
+            }
+
+
 
 
             return duplaEstados;
         }
+
+
+        
  
 
         //A lista 'a', 'a' é a que vai ser validada
