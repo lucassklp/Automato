@@ -29,7 +29,7 @@ namespace Automato
         /// </summary>
         /// <param name="Cadeia">A cadeia que deseja ser testada</param>
         /// <returns>Uma boolean indicando a cadeia se pertence ou não a linguagem do automato, a partir do Estado inicial.</returns>
-        public bool GetEstado(string Cadeia)
+        public Node GetEstado(string Cadeia)
         {
             //Pega o estado inicial
             Node estadoAtual = this.listaEstados.Find(p => p.Estado == Estado.InicialAceitacao || p.Estado == Estado.InicialNaoAceitacao);
@@ -40,10 +40,8 @@ namespace Automato
                 estadoAtual = transicao.To;
             }
 
-            if (estadoAtual.Estado == Estado.Aceitacao || estadoAtual.Estado == Estado.InicialAceitacao)
-                return true;
-            else
-                return false;
+            return estadoAtual;
+         
         }
 
 
@@ -53,7 +51,7 @@ namespace Automato
         /// <param name="Cadeia">A cadeia que deseja ser testada</param>
         /// <param name="Inicial">Por qual nó comeca a verificação</param>
         /// <returns>Uma boolean indicando a cadeia se pertence ou não a linguagem do automato</returns>
-        public bool GetEstado(string Cadeia, Node Inicial)
+        public Node GetEstado(string Cadeia, Node Inicial)
         {
             Node estadoAtual = Inicial;
             foreach (var item in Cadeia)
@@ -62,10 +60,7 @@ namespace Automato
                 estadoAtual = transicao.To;
             }
 
-            if (estadoAtual.Estado == Estado.Aceitacao || estadoAtual.Estado == Estado.InicialAceitacao)
-                return true;
-            else
-                return false;
+            return estadoAtual;
         }
 
 

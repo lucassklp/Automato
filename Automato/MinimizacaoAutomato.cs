@@ -28,30 +28,61 @@ namespace Automato
                         duplaEstados.Add(new DuplaEstado(listaEstados[i], this.listaEstados[j]));
 
             //Deleta as duplas que são de estados diferentes
-            duplaEstados.RemoveAll(p => (p.Estado1.Estado == Estado.Aceitacao && p.Estado2.Estado == Estado.NaoAceitacao) ||
-                                        (p.Estado1.Estado == Estado.NaoAceitacao && p.Estado2.Estado == Estado.Aceitacao) ||
-                                        (p.Estado1.Estado == Estado.InicialAceitacao && p.Estado2.Estado == Estado.NaoAceitacao) ||
-                                        (p.Estado1.Estado == Estado.InicialNaoAceitacao && p.Estado2.Estado == Estado.Aceitacao));
-            ,
+            duplaEstados = duplaEstados.FindAll(p => (p.Estado1.Estado == Estado.Aceitacao && p.Estado2.Estado == Estado.Aceitacao) ||
+                                        (p.Estado1.Estado == Estado.NaoAceitacao && p.Estado2.Estado == Estado.NaoAceitacao) ||
+                                        (p.Estado1.Estado == Estado.InicialAceitacao && p.Estado2.Estado == Estado.Aceitacao) ||
+                                        (p.Estado1.Estado == Estado.InicialNaoAceitacao && p.Estado2.Estado == Estado.NaoAceitacao));
+            
 
             LeitorAutomato leitorAutomato = new LeitorAutomato(this.listaEstados, this.listaTransicao, this.Alfabeto);
+
             foreach (var dupla in duplaEstados)
             {
-                bool isValid = true;
-
                 foreach (var item in this.Alfabeto)
-                    if (leitorAutomato.GetEstado(item.ToString(), dupla.Estado1) != leitorAutomato.GetEstado(item.ToString(), dupla.Estado2))
-                        isValid = false;
-                
+                {
+                    Node estado1 = leitorAutomato.GetEstado(item.ToString(), dupla.Estado1);
+                    Node estado2 = leitorAutomato.GetEstado(item.ToString(), dupla.Estado2);
 
-                if (!isValid)
-                    duplaEstados.Remove(dupla);
+                    //É ao contrário.
+                    //Codigo Antigo:
+                    //dupla.Link(new DuplaEstado(estado1, estado2));
+
+                    //Exemplo (o contrário): 
+                    DuplaEstado resultadoBusca = duplaEstados.Find(x => x.Estado1.Nome == estado1.Nome && x.Estado2.Nome == estado2.Nome);
+                    if (resultadoBusca != null && estado1.Nome != estado2.Nome)
+                        resultadoBusca.Link(dupla);
+
+                }
+            }
+
+            List<DuplaEstado> itensToRemove = new List<DuplaEstado>();
+
+            foreach (var dupla in duplaEstados)
+            {
+                foreach (var linkedItem in dupla.LinkedList)
+                {
+                    var resultadoBusca = duplaEstados.Find(x => x.Estado1.Nome == linkedItem.Estado1.Nome && x.Estado2.Nome == linkedItem.Estado2.Nome);
+                    if (resultadoBusca == null && linkedItem.Estado1.Nome != linkedItem.Estado2.Nome)
+                    {
+                        itensToRemove.Add(dupla);
+                        break;
+                    }
+                }
             }
 
 
 
 
+
+            List<DuplaEstado> estadosEquivalentes = new List<DuplaEstado>();
+
+            foreach (var item in itensToRemove)
+                duplaEstados.RemoveAll(x => x.Estado1.Nome == item.Estado1.Nome && x.Estado2.Nome == item.Estado2.Nome);
+
             return duplaEstados;
+
+
+
         }
 
 

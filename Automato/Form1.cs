@@ -170,8 +170,6 @@ namespace Automato
 
                         Triangle seta = Calculos.GetArrow(setaPosition, angulo);
                         seta.Draw(Screen, foregroundColor, true, true);
-
-                        
                     }
 
                     transicoesFeitas.Add(item);
