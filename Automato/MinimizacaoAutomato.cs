@@ -35,6 +35,8 @@ namespace Automato
             
 
             LeitorAutomato leitorAutomato = new LeitorAutomato(this.listaEstados, this.listaTransicao, this.Alfabeto);
+            List<DuplaEstado> itensToRemove = new List<DuplaEstado>();
+
 
             foreach (var dupla in duplaEstados)
             {
@@ -51,24 +53,23 @@ namespace Automato
                     DuplaEstado resultadoBusca = duplaEstados.Find(x => x.Estado1.Nome == estado1.Nome && x.Estado2.Nome == estado2.Nome);
                     if (resultadoBusca != null && estado1.Nome != estado2.Nome)
                         resultadoBusca.Link(dupla);
-
-                }
-            }
-
-            List<DuplaEstado> itensToRemove = new List<DuplaEstado>();
-
-            foreach (var dupla in duplaEstados)
-            {
-                foreach (var linkedItem in dupla.LinkedList)
-                {
-                    var resultadoBusca = duplaEstados.Find(x => x.Estado1.Nome == linkedItem.Estado1.Nome && x.Estado2.Nome == linkedItem.Estado2.Nome);
-                    if (resultadoBusca == null && linkedItem.Estado1.Nome != linkedItem.Estado2.Nome)
-                    {
+                    else if (resultadoBusca == null && estado1.Nome != estado2.Nome)
                         itensToRemove.Add(dupla);
-                        break;
-                    }
                 }
             }
+
+            //foreach (var dupla in duplaEstados)
+            //{
+            //    foreach (var linkedItem in dupla.LinkedList)
+            //    {
+            //        var resultadoBusca = duplaEstados.Find(x => x.Estado1.Nome == linkedItem.Estado1.Nome && x.Estado2.Nome == linkedItem.Estado2.Nome);
+            //        if (resultadoBusca == null && linkedItem.Estado1.Nome != linkedItem.Estado2.Nome)
+            //        {
+            //            itensToRemove.Add(dupla);
+            //            break;
+            //        }
+            //    }
+            //}
 
 
 

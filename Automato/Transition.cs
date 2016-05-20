@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Automato
 {
+    [Serializable]
     class Transition
     {
         public Node From;

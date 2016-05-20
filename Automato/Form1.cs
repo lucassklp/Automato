@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -42,9 +43,8 @@ namespace Automato
 
         //Legendas
         private string Status = "Ready"; //Texto do status
-        private string  Menu = "M: Mover | E: Inserir novo estado | Delete: Deletar Elementos | T: Adicionar Transição | I: Definir estado inicial"; //Texto do Menu
-        private string Debug = "Debuging...";
-
+        private string  Menu = "M: Mover | E: Inserir novo estado | Delete: Deletar Elementos | T: Adicionar Transição | I: Definir estado inicial | A: Abrir Arquivo | S: Salvar Arquivo"; //Texto do Menu
+        
 
         //Representação global dos automatos
         private List<char> Alphabet; //Alfabeto
@@ -245,11 +245,75 @@ namespace Automato
                 }
 
 
-
-
-                if (Command == 'Q')
+                if (Command == 'S')
                 {
+                    Command = ' ';
 
+                    Stream myStream;
+                    SaveFileDialog sfd = new SaveFileDialog();
+                    sfd.AddExtension = true;
+                    sfd.DefaultExt = "afd";
+                    sfd.Filter = "Automato Finito Deterministico (*.afd) | *.afd";
+                    sfd.FileName = "Untitled";
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            if ((myStream = sfd.OpenFile()) != null)
+                            {
+                                AutomatoFile p = new AutomatoFile(this.listNodes, this.listTransition, this.Alphabet);
+                                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                                binaryFormatter.Serialize(myStream, p);
+                                MessageBox.Show("Salvo com sucesso!");
+
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            MessageBox.Show("Erro: " + ex.Message);
+                        }
+                    }
+
+                    
+                }
+                else if(Command == 'A')
+                {
+                    Command = ' ';
+
+                    Stream myStream;
+
+                    OpenFileDialog sfd = new OpenFileDialog();
+                    sfd.AddExtension = true;
+                    sfd.DefaultExt = "afd";
+                    sfd.Filter = "Automato Finito Deterministico (*.afd) | *.afd";
+                    sfd.FileName = "Untitled";
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            if ((myStream = sfd.OpenFile()) != null)
+                            {
+                                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                                AutomatoFile p = (AutomatoFile)binaryFormatter.Deserialize(myStream);
+                                this.listNodes.Clear();
+                                this.listTransition.Clear();
+                                this.Alphabet.Clear();
+
+                                this.Alphabet = p.Alfabeto;
+                                this.listTransition = p.listTransition;
+                                this.listNodes = p.listEstados;
+
+                                MessageBox.Show("Carregado com sucesso!");
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            MessageBox.Show("Erro: " + ex.Message);
+                        }
+                    }
+                }
+                else if (Command == 'Q')
+                {
                     VerificadorAutomato verificador = new VerificadorAutomato(this.listNodes, this.listTransition, this.Alphabet);
                     bool isValid = verificador.Validar();
 
@@ -260,7 +324,7 @@ namespace Automato
 
                     MinimizacaoAutomato min = new MinimizacaoAutomato(this.listNodes, this.listTransition, this.Alphabet);
                     min.GetEstadosEquivalentes();
-                    
+
                     Command = ' ';
                 }
 
@@ -268,14 +332,10 @@ namespace Automato
                 SurfaceTextCoordinate = font.Render(Position, foregroundColor);
                 SurfaceTextStatus = font.Render(Status, foregroundColor);
                 SurfaceTextMenu = font.Render(this.Menu, foregroundColor);
-                SurfaceTextDebug = font.Render(this.Debug, foregroundColor);
 
                 Screen.Blit(SurfaceTextCoordinate, new Point(890, 0));
                 Screen.Blit(SurfaceTextMenu, new Point(0, 0));
                 Screen.Blit(SurfaceTextStatus, new Point(0, 450));
-                Screen.Blit(SurfaceTextDebug, new Point(500, 450));
-
-                Debug = "Debugging";
 
                 Screen.Update();
             });
@@ -331,6 +391,8 @@ namespace Automato
                 Command = 'I';
             else if (e.Key == (Key.Q))
                 Command = 'Q';
+            else if (e.Key == (Key.A))
+                Command = 'A';
         }
 
         private void MouseButtonDown(object sender, MouseButtonEventArgs args)
@@ -362,16 +424,7 @@ namespace Automato
                     this.PreviousCommand = 'D';
                     Command = ' ';
                 }
-                else if (Command == 'T' && this.from == null)
-                {
-                    this.from = GetClickedNode();
-                }
-                else if (Command == 'S' && this.PreviousCommand != 'T')
-                {
-                    this.PreviousCommand = 'S';
-                    Command = ' ';
-                    return;
-                }
+
                 else if (Command == 'M')
                 {
                     this.selected = GetClickedNode();
@@ -422,8 +475,6 @@ namespace Automato
                 }
             }
         }
-
-
 
         private void ArrastarNode(object sender, MouseMotionEventArgs e)
         {
@@ -496,8 +547,6 @@ namespace Automato
                 this.linhaTransicao = new Line(this.from.Coordenada, new Point(x, y));
                 int angulo = Calculos.GetAnguloReta(this.linhaTransicao.Point1, this.linhaTransicao.Point2);
                 this.setaTransicao = Calculos.GetArrow(new Point(x, y), angulo);
-
-                Debug = "Line";
             }
 
         }
