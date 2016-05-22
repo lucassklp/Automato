@@ -406,6 +406,10 @@ namespace Automato
                     this.PreviousCommand = 'E';
                     Command = ' ';
                 }
+                else if (Command == 'T')
+                {
+                    this.from = GetClickedNode();
+                }
                 else if (Command == 'D')
                 {
                     Node toDelete = GetClickedNode();
