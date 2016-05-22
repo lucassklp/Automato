@@ -59,11 +59,17 @@ namespace Automato
                         continue;
                     else if (this.Contém(item, NaoMarcados) && !this.Contém(item, ItensMarcados))
                         this.GetDuplaEstado(item, NaoMarcados).Link(dupla);
-                    else if (!this.Contém(item, NaoMarcados))
+                    else if (!this.Contém(item, NaoMarcados) || this.Contém(item, ItensMarcados))
                     {
-                        ItensMarcados.Add(dupla);
-                        foreach (var linked in dupla.LinkedList)
-                            ItensMarcados.Add(linked);
+                        if (duplaEstados.Exists(x => x.Estado1.Nome == item.Estado1.Nome && x.Estado2.Nome == item.Estado2.Nome))
+                        {
+                            ItensMarcados.Add(dupla);
+                            foreach (var linked in dupla.LinkedList)
+                                ItensMarcados.Add(linked);
+                            break;
+                        }
+                        else
+                            count++;
                     }
                 }
             }
@@ -73,14 +79,9 @@ namespace Automato
                 var itemInList = NaoMarcados.Find(x => x.Estado1.Nome == itemToRemove.Estado1.Nome && x.Estado2.Nome == itemToRemove.Estado2.Nome);
                 if (itemInList != null)
                     NaoMarcados.Remove(itemInList);
-                else
-                    count++;
             }
 
             return NaoMarcados;
-
-
-
         }
 
         private List<DuplaEstado> GetDuplasAlfabeto(DuplaEstado dupla)
