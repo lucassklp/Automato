@@ -323,8 +323,8 @@ namespace Automato
                         MessageBox.Show("Invalido");
 
                     MinimizacaoAutomato min = new MinimizacaoAutomato(this.listNodes, this.listTransition, this.Alphabet);
-                    min.GetEstadosEquivalentes();
-
+                    List<DuplaEstado> estadosEquivalentes =  min.GetEstadosEquivalentes();
+                    min.UnificacaoDosEstados(estadosEquivalentes);
                     Command = ' ';
                 }
 

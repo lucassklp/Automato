@@ -55,6 +55,7 @@
     <Compile Include="DuplaEstado.cs" />
     <Compile Include="EnumEstados.cs" />
     <Compile Include="AutomatoFile.cs" />
+    <Compile Include="EstadoUnificado.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
