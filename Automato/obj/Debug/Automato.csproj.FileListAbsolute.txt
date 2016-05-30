@@ -35,3 +35,6 @@ D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.Form1.resources
 D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.GetElementTransition.resources
 D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.Properties.Resources.resources
 D:\Lucas\Projetos\GitHub\Automato\Automato\obj\Debug\Automato.csproj.GenerateResource.Cache
+D:\Lucas\Projetos\GitHub\Automato\Automato\bin\Debug\SdlDotNet.dll
+D:\Lucas\Projetos\GitHub\Automato\Automato\bin\Debug\Tao.Sdl.dll
+D:\Lucas\Projetos\GitHub\Automato\Automato\bin\Debug\Tao.Sdl.xml

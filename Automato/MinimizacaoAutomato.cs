@@ -64,11 +64,16 @@ namespace Automato
                         if (duplaEstados.Exists(x => x.Estado1.Nome == item.Estado1.Nome && x.Estado2.Nome == item.Estado2.Nome))
                         {
                             ItensMarcados.Add(dupla);
-                            if (dupla.LinkedList != null)
-                                foreach (var linked in dupla.LinkedList)
-                                    ItensMarcados.Add(linked);
-
-                            break;
+                            this.RemoverRecursivo(dupla, ref ItensMarcados);
+                        }
+                        else if (dupla.Equals(NaoMarcados.First()))
+                        {
+                            DuplaEstado p = new DuplaEstado(item.Estado2, item.Estado1);
+                            if (duplaEstados.Exists(x => x.Estado1.Nome == p.Estado1.Nome && x.Estado2.Nome == p.Estado2.Nome))
+                            {
+                                ItensMarcados.Add(dupla);
+                                this.RemoverRecursivo(dupla, ref ItensMarcados);
+                            }
                         }
                     }
                 }
@@ -82,6 +87,21 @@ namespace Automato
             }
 
             return NaoMarcados;
+        }
+
+
+        private void RemoverRecursivo(DuplaEstado dupla, ref List<DuplaEstado> ItensMarcados)
+        {
+            if (dupla.LinkedList == null)
+                return;
+            else
+            {
+                foreach (var item in dupla.LinkedList)
+                {
+                    RemoverRecursivo(item, ref ItensMarcados);
+                    ItensMarcados.Add(item);
+                }
+            }
         }
 
         private List<DuplaEstado> GetDuplasAlfabeto(DuplaEstado dupla)
@@ -125,10 +145,10 @@ namespace Automato
 
                 Estado estado;
 
-                if (item.Estado1.Estado == Estado.InicialAceitacao)
-                    estado = Estado.Aceitacao;
-                else if (item.Estado1.Estado == Estado.InicialNaoAceitacao)
-                    estado = Estado.NaoAceitacao;
+                if (item.Estado1.Estado == Estado.InicialAceitacao || item.Estado2.Estado == Estado.InicialAceitacao)
+                    estado = Estado.InicialAceitacao;
+                else if (item.Estado1.Estado == Estado.InicialNaoAceitacao || item.Estado2.Estado == Estado.InicialNaoAceitacao)
+                    estado = Estado.InicialNaoAceitacao;
                 else
                     estado = item.Estado1.Estado;
                 
@@ -146,14 +166,62 @@ namespace Automato
                 {
                     Node est1 = transicoesEstado1.Find(x => x.From.Nome == item.Dupla.Estado1.Nome).To;
                     Node est2 = transicoesEstado2.Find(x => x.From.Nome == item.Dupla.Estado2.Nome).To;
-                    if (EstadosSãoIguais(new DuplaEstado(est1, est2)))
+
+                    EstadoUnificado destino = estadosUnificados.Find(x => x.Dupla.Estado1.Nome == est1.Nome && x.Dupla.Estado2.Nome == est2.Nome);
+
+                    if (destino != null)
+                        this.listaTransicao.Add(new Transition(item.EstadoEquivalente, destino.EstadoEquivalente, letra));
+                    else
                     {
                         this.listaTransicao.Add(new Transition(item.EstadoEquivalente, est1, letra));
+                        //this.listaTransicao.Add(new Transition(item.EstadoEquivalente, est2, letra));
                     }
+
+                }
+            }
+
+            foreach (var item in estadosUnificados)
+            {
+                //Adiciona os estados unificados
+                listaEstados.Add(item.EstadoEquivalente);
+
+                List<Node> estados = new List<Node>();
+                List<EstadoUnificado> estunifc = new List<EstadoUnificado>();
+                estunifc = estadosUnificados;
+
+                foreach (var itemToList in estunifc)
+                {
+                    estados.Add(itemToList.Dupla.Estado1);
+                    estados.Add(itemToList.Dupla.Estado2);
                 }
 
+                List<Transition> transicoes = new List<Transition>();
+
+                transicoes = this.listaTransicao.FindAll(x => estados.Exists(y => y.Nome == x.To.Nome));
+                transicoes.RemoveAll(x => estados.Exists(y => y.Nome == x.From.Nome));
+                
+
+                foreach (var itemTransition in transicoes)
+                {
+                    EstadoUnificado p = estadosUnificados.Find(x => x.Dupla.Estado1.Nome == itemTransition.To.Nome || x.Dupla.Estado2.Nome == itemTransition.To.Nome);
+                    itemTransition.To = p.EstadoEquivalente;
+                }
+                        
+
+                //Remove as duplas
+                listaEstados.RemoveAll(x => x.Nome == item.Dupla.Estado1.Nome || x.Nome == item.Dupla.Estado2.Nome);
+
+                //Remove as transições
+                listaTransicao.RemoveAll(x => x.From.Nome == item.Dupla.Estado1.Nome || x.To.Nome == item.Dupla.Estado1.Nome);
+                listaTransicao.RemoveAll(x => x.From.Nome == item.Dupla.Estado2.Nome || x.To.Nome == item.Dupla.Estado2.Nome);
 
             }
+
+
+
+
+
+
         }
 
 

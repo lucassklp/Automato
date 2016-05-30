@@ -324,6 +324,13 @@ namespace Automato
 
                     MinimizacaoAutomato min = new MinimizacaoAutomato(this.listNodes, this.listTransition, this.Alphabet);
                     List<DuplaEstado> estadosEquivalentes =  min.GetEstadosEquivalentes();
+
+                    string msgEquivalentes = string.Empty;
+                    foreach (var item in estadosEquivalentes)
+                        msgEquivalentes += string.Format("O estado {0} é equivalente ao estado {1}\n", item.Estado1.Nome, item.Estado2.Nome);
+
+                    MessageBox.Show(msgEquivalentes);
+
                     min.UnificacaoDosEstados(estadosEquivalentes);
                     Command = ' ';
                 }
