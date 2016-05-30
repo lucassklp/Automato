@@ -64,12 +64,12 @@ namespace Automato
                         if (duplaEstados.Exists(x => x.Estado1.Nome == item.Estado1.Nome && x.Estado2.Nome == item.Estado2.Nome))
                         {
                             ItensMarcados.Add(dupla);
-                            foreach (var linked in dupla.LinkedList)
-                                ItensMarcados.Add(linked);
+                            if (dupla.LinkedList != null)
+                                foreach (var linked in dupla.LinkedList)
+                                    ItensMarcados.Add(linked);
+
                             break;
                         }
-                        else
-                            count++;
                     }
                 }
             }
@@ -111,5 +111,56 @@ namespace Automato
         {
             return (item.Estado1.Nome == item.Estado2.Nome);
         }
+
+
+
+        public void UnificacaoDosEstados(List<DuplaEstado> listDuplas)
+        {
+
+            List<EstadoUnificado> estadosUnificados = new List<EstadoUnificado>();
+
+            foreach (var item in listDuplas)
+            {
+                string NomeEstadoUnificado = item.Estado1.Nome + item.Estado2.Nome.Replace("q", "");
+
+                Estado estado;
+
+                if (item.Estado1.Estado == Estado.InicialAceitacao)
+                    estado = Estado.Aceitacao;
+                else if (item.Estado1.Estado == Estado.InicialNaoAceitacao)
+                    estado = Estado.NaoAceitacao;
+                else
+                    estado = item.Estado1.Estado;
+                
+                Node novoEstado = new Node(NomeEstadoUnificado, item.Estado1.Coordenada, estado);
+                estadosUnificados.Add(new EstadoUnificado(item, novoEstado));
+                
+            }
+
+            foreach (var item in estadosUnificados)
+            {
+                List<Transition> transicoesEstado1 = this.listaTransicao.FindAll(x => x.From.Nome == item.Dupla.Estado1.Nome);
+                List<Transition> transicoesEstado2 = this.listaTransicao.FindAll(x => x.From.Nome == item.Dupla.Estado2.Nome);
+
+                foreach (var letra in this.Alfabeto)
+                {
+                    Node est1 = transicoesEstado1.Find(x => x.From.Nome == item.Dupla.Estado1.Nome).To;
+                    Node est2 = transicoesEstado2.Find(x => x.From.Nome == item.Dupla.Estado2.Nome).To;
+                    if (EstadosSãoIguais(new DuplaEstado(est1, est2)))
+                    {
+                        this.listaTransicao.Add(new Transition(item.EstadoEquivalente, est1, letra));
+                    }
+                }
+
+
+            }
+        }
+
+
+
+
+
+
+
     }
 }
