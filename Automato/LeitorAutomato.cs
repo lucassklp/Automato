@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Automato
 {
-    class LeitorAutomato
+    public class LeitorAutomato
     {
         private List<Node> listaEstados;
         private List<Transition> listaTransicoes;

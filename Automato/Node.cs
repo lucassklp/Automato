@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Automato
 {
     [Serializable]
-    class Node
+    public class Node
     {
         public string Nome;
         public Point Coordenada;

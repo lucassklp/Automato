@@ -43,7 +43,7 @@ namespace Automato
 
         //Legendas
         private string Status = "Ready"; //Texto do status
-        private string  Menu = "M: Mover | E: Inserir novo estado | Delete: Deletar Elementos | T: Adicionar Transição | I: Definir estado inicial | A: Abrir Arquivo | S: Salvar Arquivo"; //Texto do Menu
+        private string  Menu = "M: Mover | E: Inserir novo estado | Delete: Deletar Elementos | T: Adicionar Transição | I: Definir estado inicial | A: Abrir Arquivo | S: Salvar Arquivo | L: Leitor de Cadeias"; //Texto do Menu
         
 
         //Representação global dos automatos
@@ -268,15 +268,15 @@ namespace Automato
 
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             MessageBox.Show("Erro: " + ex.Message);
                         }
                     }
 
-                    
+
                 }
-                else if(Command == 'A')
+                else if (Command == 'A')
                 {
                     Command = ' ';
 
@@ -306,7 +306,7 @@ namespace Automato
                                 MessageBox.Show("Carregado com sucesso!");
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             MessageBox.Show("Erro: " + ex.Message);
                         }
@@ -323,7 +323,7 @@ namespace Automato
                         MessageBox.Show("Invalido");
 
                     MinimizacaoAutomato min = new MinimizacaoAutomato(this.listNodes, this.listTransition, this.Alphabet);
-                    List<DuplaEstado> estadosEquivalentes =  min.GetEstadosEquivalentes();
+                    List<DuplaEstado> estadosEquivalentes = min.GetEstadosEquivalentes();
 
                     string msgEquivalentes = string.Empty;
                     foreach (var item in estadosEquivalentes)
@@ -334,7 +334,19 @@ namespace Automato
                     min.UnificacaoDosEstados(estadosEquivalentes);
                     Command = ' ';
                 }
+                else if (Command == 'L')
+                {
+                    VerificadorAutomato verificador = new VerificadorAutomato(listNodes, listTransition, Alphabet);
+                    if (verificador.Validar())
+                    {
+                        ReconhecedorDeCadeia reconhecedor = new ReconhecedorDeCadeia(this.listNodes, this.listTransition, this.Alphabet);
+                        reconhecedor.ShowDialog();
+                    }
+                    else
+                        MessageBox.Show("O automato não é um AFD válido");
 
+                    Command = ' ';
+                }
 
                 SurfaceTextCoordinate = font.Render(Position, foregroundColor);
                 SurfaceTextStatus = font.Render(Status, foregroundColor);
@@ -400,6 +412,8 @@ namespace Automato
                 Command = 'Q';
             else if (e.Key == (Key.A))
                 Command = 'A';
+            else if (e.Key == (Key.L))
+                Command = 'L';
         }
 
         private void MouseButtonDown(object sender, MouseButtonEventArgs args)
