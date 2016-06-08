@@ -38,19 +38,16 @@ namespace Automato
                     LeitorAutomato leitorAutomato = new LeitorAutomato(listEstados, listTransition, Alfabeto);
                     Node resultado = leitorAutomato.GetEstado(txtCadeia.Text);
                     string strResultado = (resultado.Estado == Estado.Aceitacao || resultado.Estado == Estado.InicialAceitacao ? "Estado de Aceitacao" : "Estado de rejeição");
-
-                    MessageBox.Show("Estado resultante: " +resultado.Nome +"\n " +strResultado);
-
-                }
-                catch
-                {
+                    MessageBox.Show("Estado resultante: " + resultado.Nome + "\n " + strResultado);
 
                 }
-                finally
+                catch (Exception ex)
                 {
-
+                    MessageBox.Show("Um erro aconteceu: " + ex.Message);
                 }
             }
+            else
+                MessageBox.Show("A cadeia de entrada contém erros. Verifique se os elementos pertencem ao alfabeto.");
         }
     }
 }
